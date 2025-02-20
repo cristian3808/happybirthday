@@ -53,64 +53,64 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
         </a>
     </div>
 </header>
-
-<div class="container mx-auto p-5">
-<!-- Contenedor del botón y texto -->
-<div class="flex justify-end items-center mb-4">
-    <span class="text-gray-800 mr-[1150px]">Lista de Usuarios</span>
-    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center gap-x-3 ml-[10px]" onclick="agregarUsuario()">
-        <img src="/static/img/agregar.svg" alt="" class="h-5 w-5">Agregar Usuario
-    </button>
-</div>
-
-
+    <div class="flex justify-center items-center mb-4 gap-x-6">
+        <!-- Contenedor con ancho fijo para evitar que la tabla se agrande -->
+        <div class="w-[250px]">
+            <input type="text" id="buscador" placeholder="Buscar usuario..." 
+                class="w-[350px] px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ml-[0px]"
+                onkeyup="filtrarUsuarios()">
+        </div>
+        <!-- Botón para agregar usuario -->
+        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full flex items-center gap-x-3 ml-[700px]"
+                onclick="agregarUsuario()">
+            <img src="/static/img/agregar.svg" alt="" class="h-5 w-5"><strong>Agregar Usuario</strong>
+        </button>
+    </div>
     <script>
-        function capitalizarTexto(texto) {
-            return texto.toLowerCase().replace(/\b\w/g, (letra) => letra.toUpperCase());
-        }
+    function capitalizarTexto(texto) {
+        return texto.toLowerCase().replace(/\b\w/g, (letra) => letra.toUpperCase());
+    }
+    function agregarUsuario() {
+        Swal.fire({
+            title: "Agregar Usuario",
+            html: `
+                <div class="w-[350px] mx-auto flex flex-col space-y-3">
+                    <input id='nombre' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Nombres' oninput="this.value = capitalizarTexto(this.value)">
+                    <input id='apellido' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Apellidos' >
+                    <input id='email' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Email'>
+                    <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date'>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: "Guardar",
+            cancelButtonText: "Cancelar",
+            customClass: {
+                confirmButton: "bg-green-600 hover:bg-lime-500 text-white font-bold py-2 px-4 rounded",
+                cancelButton: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
+                actions: "flex justify-center gap-x-3"
+            },
+            buttonsStyling: false,
+            preConfirm: () => {
+                const nombre = document.getElementById('nombre').value;
+                const apellido = document.getElementById('apellido').value;
+                const email = document.getElementById('email').value;
+                const fecha = document.getElementById('fecha').value;
 
-        function agregarUsuario() {
-            Swal.fire({
-                title: "Agregar Usuario",
-                html: `
-                    <div class="w-[350px] mx-auto flex flex-col space-y-3">
-                        <input id='nombre' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Nombres' oninput="this.value = capitalizarTexto(this.value)">
-                        <input id='apellido' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Apellidos' >
-                        <input id='email' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Email'>
-                        <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date'>
-                    </div>
-                `,
-                showCancelButton: true,
-                confirmButtonText: "Guardar",
-                cancelButtonText: "Cancelar",
-                customClass: {
-                    confirmButton: "bg-green-600 hover:bg-lime-500 text-white font-bold py-2 px-4 rounded",
-                    cancelButton: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
-                    actions: "flex justify-center gap-x-3"
-                },
-                buttonsStyling: false,
-                preConfirm: () => {
-                    const nombre = document.getElementById('nombre').value;
-                    const apellido = document.getElementById('apellido').value;
-                    const email = document.getElementById('email').value;
-                    const fecha = document.getElementById('fecha').value;
-
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = 'crud.php';
-                    form.innerHTML = `
-                        <input type='hidden' name='nombre' value='${nombre}'>
-                        <input type='hidden' name='apellido' value='${apellido}'>
-                        <input type='hidden' name='email' value='${email}'>
-                        <input type='hidden' name='fecha_nacimiento' value='${fecha}'>
-                        <input type='hidden' name='agregar' value='1'>
-                    `;
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        }
-
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'crud.php';
+                form.innerHTML = `
+                    <input type='hidden' name='nombre' value='${nombre}'>
+                    <input type='hidden' name='apellido' value='${apellido}'>
+                    <input type='hidden' name='email' value='${email}'>
+                    <input type='hidden' name='fecha_nacimiento' value='${fecha}'>
+                    <input type='hidden' name='agregar' value='1'>
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
     </script>
     <?php
     if (isset($_POST['agregar'])) {
@@ -127,95 +127,110 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
         }
     }
     ?>
-    <div class="overflow-x-auto">
-        <table class="w-full bg-white shadow-lg rounded-lg border-collapse overflow-hidden border border-gray-300">
-            <thead>
-                <tr class="bg-green-700 text-white ">
-                    <th class="py-2 border-r border-gray-300 text-center w-[200px]">Nombres</th>
-                    <th class="py-2 border-r border-gray-300 text-center w-[200px]">Apellidos</th>
-                    <th class="py-2 border-r border-gray-300 text-center w-[200px]">Correo electronico</th>
-                    <th class="py-2 border-r border-gray-300 text-center w-[150px]">Fecha de Nacimiento</th>
-                    <th class="py-2 text-center last:rounded-tr-lg w-[120px]">Acciones</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-300">
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <tr class="hover:bg-gray-100 transition-all border-l-4 border-transparent hover:border-green-500 first:rounded-t-lg last:rounded-b-lg">
-                        <td class="py-1 px-4 border-r border-gray-300"><?= $row['nombre'] ?></td>
-                        <td class="py-1 px-4 border-r border-gray-300"><?= $row['apellido'] ?></td>
-                        <td class="py-1 px-4 border-r border-gray-300"><?= $row['email'] ?></td>
-                        <td class="py-1 px-4 border-r border-gray-300 text-center"><?= $row['fecha_nacimiento'] ?></td>
-                        <td class="py-1 px-4 flex justify-center space-x-2">
-                            <button class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-full transition-all flex items-center space-x-4"
-                                    onclick="editarUsuario(<?= $row['id'] ?>, '<?= $row['nombre'] ?>', '<?= $row['apellido'] ?>', '<?= $row['email'] ?>', '<?= $row['fecha_nacimiento'] ?>')">
-                                    <img src="/static/img/editar.svg" alt="" class="w-5 h-5">
-                                    Editar
-                            </button>
-                            <button class="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded-full transition-all flex items-center space-x-4"
-                                    onclick="eliminarUsuario(<?= $row['id'] ?>)">
-                                    <img src="/static/img/cerrar.svg" alt="" class="w-4 h-3">
-                                    Eliminar
-                            </button>
-                        </td>
+    <div class="flex justify-center overflow-y-auto max-h-[700px]  ">
+        <table class="w-[1200px] bg-white shadow-lg rounded-lg border-none">
+                <thead class="sticky top-0 bg-green-700 text-white z-10">
+                    <tr class="bg-green-700 text-white ">
+                        <th class="py-2 border-r border-gray-300 text-center w-[200px]">Nombres</th>
+                        <th class="py-2 border-r border-gray-300 text-center w-[200px]">Apellidos</th>
+                        <th class="py-2 border-r border-gray-300 text-center w-[200px]">Correo electronico</th>
+                        <th class="py-2 border-r border-gray-300 text-center w-[150px]">Fecha de Nacimiento</th>
+                        <th class="py-2 text-center last:rounded-tr-lg w-[120px]">Acciones</th>
                     </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-300">
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr class="hover:bg-gray-100 transition-all border-l-4 border-transparent hover:border-green-500 first:rounded-t-lg last:rounded-b-lg">
+                            <td class="py-1 px-4 border-r border-gray-300"><?= $row['nombre'] ?></td>
+                            <td class="py-1 px-4 border-r border-gray-300"><?= $row['apellido'] ?></td>
+                            <td class="py-1 px-4 border-r border-gray-300"><?= $row['email'] ?></td>
+                            <td class="py-1 px-4 border-r border-gray-300 text-center"><?= $row['fecha_nacimiento'] ?></td>
+                            <td class="py-1 px-4 flex justify-center space-x-2">
+                                <button class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-full transition-all flex items-center space-x-4"
+                                        onclick="editarUsuario(<?= $row['id'] ?>, '<?= $row['nombre'] ?>', '<?= $row['apellido'] ?>', '<?= $row['email'] ?>', '<?= $row['fecha_nacimiento'] ?>')">
+                                        <img src="/static/img/editar.svg" alt="" class="w-5 h-5">
+                                        Editar
+                                </button>
+                                <button class="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded-full transition-all flex items-center space-x-4"
+                                        onclick="eliminarUsuario(<?= $row['id'] ?>)">
+                                        <img src="/static/img/cerrar.svg" alt="" class="w-4 h-3">
+                                        Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
+    <script>
+        function filtrarUsuarios() {
+            let input = document.getElementById("buscador").value.toLowerCase();
+            let filas = document.querySelectorAll("tbody tr");
 
-<script>
-    function eliminarUsuario(id) {
-        Swal.fire({
-            title: "¿Seguro que quieres eliminar este usuario?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Sí, eliminar"
-        }).then((result) => {
-            if (result.isConfirmed) window.location.href = 'crud.php?delete=' + id;
-        });
-    }
+            filas.forEach(fila => {
+                let nombre = fila.children[0].textContent.toLowerCase();
+                let apellido = fila.children[1].textContent.toLowerCase();
+                let email = fila.children[2].textContent.toLowerCase();
 
-    function editarUsuario(id, nombre, apellido, email, fecha) {
-        Swal.fire({
-            title: "Editar Usuario",
-            html: `
-                <div class="w-[350px] mx-auto flex flex-col space-y-3">
-                    <input id='nombre' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Nombre' value='${nombre}'>
-                    <input id='apellido' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Apellido' value='${apellido}'>
-                    <input id='email' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Email' value='${email}'>
-                    <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date' value='${fecha}'>
-                </div>
-            `,
-            showCancelButton: true,
-            confirmButtonText: "Guardar",
-            cancelButtonText: "Cancelar",
-            customClass:{
-                confirmButton:"bg-green-600 hover:bg-lime-500 text-white font-bold py-2 px-4 rounded",
-                cancelButton: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
-                actions: "flex justify-center gap-x-3"
-            },
-            buttonsStyling: false,
-            preConfirm: () => {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = 'crud.php';
-                form.innerHTML = `
-                    <input type='hidden' name='id' value='${id}'>
-                    <input type='hidden' name='nombre' value='${document.getElementById('nombre').value}'>
-                    <input type='hidden' name='apellido' value='${document.getElementById('apellido').value}'>
-                    <input type='hidden' name='email' value='${document.getElementById('email').value}'>
-                    <input type='hidden' name='fecha_nacimiento' value='${document.getElementById('fecha').value}'>
-                    <input type='hidden' name='editar' value='1'>
-                `;
-                document.body.appendChild(form);
-                form.submit();
-            }
-        });
-    }
+                if (nombre.includes(input) || apellido.includes(input) || email.includes(input)) {
+                    fila.style.display = "";
+                } else {
+                    fila.style.display = "none";
+                }
+            });
+        }
 
-</script>
+        function eliminarUsuario(id) {
+            Swal.fire({
+                title: "¿Seguro que quieres eliminar este usuario?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Sí, eliminar"
+            }).then((result) => {
+                if (result.isConfirmed) window.location.href = 'crud.php?delete=' + id;
+            });
+        }
+
+        function editarUsuario(id, nombre, apellido, email, fecha) {
+            Swal.fire({
+                title: "Editar Usuario",
+                html: `
+                    <div class="w-[350px] mx-auto flex flex-col space-y-3">
+                        <input id='nombre' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Nombre' value='${nombre}'>
+                        <input id='apellido' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Apellido' value='${apellido}'>
+                        <input id='email' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Email' value='${email}'>
+                        <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date' value='${fecha}'>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: "Guardar",
+                cancelButtonText: "Cancelar",
+                customClass:{
+                    confirmButton:"bg-green-600 hover:bg-lime-500 text-white font-bold py-2 px-4 rounded",
+                    cancelButton: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
+                    actions: "flex justify-center gap-x-3"
+                },
+                buttonsStyling: false,
+                preConfirm: () => {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'crud.php';
+                    form.innerHTML = `
+                        <input type='hidden' name='id' value='${id}'>
+                        <input type='hidden' name='nombre' value='${document.getElementById('nombre').value}'>
+                        <input type='hidden' name='apellido' value='${document.getElementById('apellido').value}'>
+                        <input type='hidden' name='email' value='${document.getElementById('email').value}'>
+                        <input type='hidden' name='fecha_nacimiento' value='${document.getElementById('fecha').value}'>
+                        <input type='hidden' name='editar' value='1'>
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
