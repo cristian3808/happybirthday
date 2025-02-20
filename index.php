@@ -27,20 +27,58 @@ if ($conn->connect_error) {
 
 // Obtener la fecha actual
 $hoy = date('m-d');
-$sql = "SELECT nombre, apellido, email FROM usuarios WHERE DATE_FORMAT(fecha_nacimiento, '%m-%d') = '$hoy'";
-$result = $conn->query($sql);
+
+// Obtener los cumpleañeros
+$sql_cumpleaneros = "SELECT nombre, apellido, email FROM usuarios WHERE DATE_FORMAT(fecha_nacimiento, '%m-%d') = '$hoy'";
+$result_cumpleaneros = $conn->query($sql_cumpleaneros);
+
+$cumpleaneros = [];
+if ($result_cumpleaneros->num_rows > 0) {
+    while ($row = $result_cumpleaneros->fetch_assoc()) {
+        $cumpleaneros[] = $row;
+    }
+}
+
+// Si no hay cumpleañeros, no enviamos correos
+if (empty($cumpleaneros)) {
+    echo "No hay cumpleaños hoy.";
+    exit;
+}
+
+// Obtener la lista de todos los usuarios
+$sql_usuarios = "SELECT email FROM usuarios";
+$result_usuarios = $conn->query($sql_usuarios);
+
+$usuarios = [];
+if ($result_usuarios->num_rows > 0) {
+    while ($row = $result_usuarios->fetch_assoc()) {
+        $usuarios[] = $row['email'];
+    }
+}
 
 $mensajes = [];
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $mensaje = enviarCorreo($row['email'], $row['nombre'] . ' ' . $row['apellido']);
-        $mensajes[] = $mensaje;
+
+// Enviar un correo a cada cumpleañero y a todos los usuarios
+foreach ($cumpleaneros as $cumpleanero) {
+    $nombreCompleto = $cumpleanero['nombre'] . ' ' . $cumpleanero['apellido'];
+    $emailCumpleanero = $cumpleanero['email'];
+
+    // Enviar el correo al cumpleañero
+    $mensaje = enviarCorreo($emailCumpleanero, $nombreCompleto);
+    $mensajes[] = $mensaje;
+
+    // Enviar el mismo correo a todos los demás usuarios
+    foreach ($usuarios as $usuarioEmail) {
+        if ($usuarioEmail !== $emailCumpleanero) { // Evitar enviarle dos veces al cumpleañero
+            $mensaje = enviarCorreo($usuarioEmail, $nombreCompleto);
+            $mensajes[] = $mensaje;
+        }
     }
-} else {
-    $mensajes[] = "No hay cumpleaños hoy.";
 }
+
 $conn->close();
 
+// Función para enviar correos
 function enviarCorreo($destinatario, $nombre) {
     global $smtp_server, $smtp_port, $email_user, $email_pass;
 
@@ -57,7 +95,7 @@ function enviarCorreo($destinatario, $nombre) {
         $mail->setFrom($email_user, "Notificaciones");
         $mail->addAddress($destinatario);
 
-        // Ruta corregida
+        // Ruta de la imagen
         $imagen_path = str_replace('\\', '/', __DIR__ . '/static/img/Tarjeta Cumpleaños TF.gif');
 
         // Verificar que la imagen existe antes de incrustarla
