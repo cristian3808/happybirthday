@@ -83,7 +83,7 @@ $conn->close();
 
 // Función para generar la imagen con el nombre del cumpleañero
 function generarImagen($nombreCompleto) {
-    $imagePath = __DIR__ . "/static/img/sisabe.png";
+    $imagePath = __DIR__ . "/static/img/fondoimg.png";
     if (!file_exists($imagePath)) {
         die("Error: La imagen no se encuentra.");
     }
