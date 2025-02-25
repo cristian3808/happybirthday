@@ -59,40 +59,8 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `apellido`, `email`, `fecha_nacimiento`) VALUES
-(20, 'Manuel Antonio', 'Tibaquira Naranjo', 'manueltibaquira@tfauditores.com', '1959-03-29'),
-(21, 'Clara Virginia', 'Forero Rojas ', 'claravirginiaforero@tfauditores.com', '1961-02-24'),
-(22, 'Luis Carlos', 'Chavarro Palacios', 'luis.chavarro@tfauditores.com', '1950-10-03'),
-(23, 'Hernan Mauricio', 'Carreno Beltran', 'hernan.carrenob@tfauditores.com', '1985-02-17'),
-(24, 'Jairo Saul', 'Rincon Baez', 'jairo.rincon@tfauditores.com', '1965-11-14'),
-(25, 'Luisa Fernanda', 'Riveros Fraile', 'luisa.riveros@tfauditores.com', '1989-02-13'),
-(26, 'Victor Armando', 'Gonzalez Plata', 'victor.gonzalez@tfauditores.com', '1982-11-26'),
-(27, 'Deisy', 'Mendivelso Torres', 'deisy.mendivelso@tfauditores.com', '1983-10-15'),
-(28, 'Rosario', 'Romero', 'ROSARIO23.ROMERO@hotmail.com', '1973-08-23'),
-(29, 'Herman', 'Villamarin Castaneda', 'herman.villamarin@tfauditores.com', '1973-11-21'),
-(30, 'Yenny Yanibe', 'Lopez Morales', 'yenny.lopez@tfauditores.com', '1983-01-05'),
-(31, 'Deisa', 'Cardenas Romero', 'recepcion@tfauditores.com', '1981-01-11'),
-(32, 'Clara Yolanda', 'Chaparro Barrera', 'clara.chaparro@tfauditores.com', '1972-05-13'),
-(33, 'Manuel Esteban', 'Tibaquira Forero', 'esteban.tibaquira@tfauditores.com', '1982-07-20'),
-(34, 'Laura Cristina', 'Tibaquira Forero', 'laura.tibaquira@tfauditores.com', '1988-08-31'),
-(35, 'Luis Antonio', 'Rojas Salcedo', 'luis.rojas@tfauditores.com', '1993-02-15'),
-(36, 'Mario Rodolfo', 'Acosta Navarrete', 'mario.acosta@tfauditores.com', '1992-01-05'),
-(37, 'Diana Marcela', 'Rubiano Sepulveda', 'diana.rubiano@tfauditores.com', '1981-11-27'),
-(38, 'Jesica Dayana', 'Achury Quevedo', 'jesica.achury@tfauditores.com', '1992-11-10'),
-(39, 'Jesus Eduardo', 'Plata Garcia', 'jesus.plata@tfauditores.com', '1989-05-02'),
-(40, 'Edgar Alberto', 'Gaitan Fajardo', 'edgar.gaitan@tfauditores.com', '1972-03-30'),
-(41, 'Adriana Patricia', 'Tibaquira Campos', 'adriana.tibaquira@tfauditores.com', '1983-05-29'),
-(42, 'Raul Antonio', 'Ballen Hernandez', 'raul.ballen@tfauditores.com', '1982-01-16'),
-(43, 'Juan Sebastian', 'Chia Montaña', 'hseq@tfauditores.com', '1992-01-12'),
-(44, 'Andres David', 'Ortiz Valencia', 'seleccion@tfauditores.com', '1991-09-20'),
-(45, 'Laura Daniela', 'Joya Oicatá', 'laura.joya@tfauditores.com', '2000-01-24'),
-(46, 'Cristian Alejandro', 'Jiménez Mora', 'cristian.jimenez@tfauditores.net ', '2005-02-08'),
-(47, 'Nesler Ricardo', 'Luna Ovalles', 'nesler.luna@gmail.com', '1987-03-30'),
-(48, 'Andres Felipe', 'Arteaga Ballesteros', 'felipe.arteaga@tfauditores.com', '2000-08-28'),
-(49, 'Liliana ', 'Sissa Pinzon ', 'liliana.sissa@tfauditores.net', '1985-08-17'),
-(50, 'Francisco Josue ', 'Florez Torrado', 'francisco.florez@tfauditores.net', '1999-02-17'),
-(51, 'Ivan Alberto ', 'Posada Ospina', 'IVAN.POSADA@tfauditores.net', '1985-04-23'),
-(52, 'John Jair ', 'Castañeda Hernandez', 'jonh.castaneda@tfauditores.net', '1982-11-23'),
-(53, 'Wilmer Leonel', 'Pinzon Rueda', 'wpinzonr@gmail.com', '1982-12-07');
+(46, 'Cristian Alejandro', 'Jiménez Mora', 'cristian.jimenez@tfauditores.net ', '2005-02-25'),
+(49, 'Liliana ', 'Sissa Pinzon ', 'liliana.sissa@tfauditores.net', '1985-08-17');
 
 --
 -- Índices para tablas volcadas
