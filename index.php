@@ -5,11 +5,11 @@ ini_set('display_errors', 1);
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Cargar PHPMailer
 require './vendor/phpmailer/phpmailer/src/Exception.php';
 require './vendor/phpmailer/phpmailer/src/PHPMailer.php';
 require './vendor/phpmailer/phpmailer/src/SMTP.php';
 require './config/db.php';
+
 $smtp_server = "smtp.gmail.com";
 $smtp_port = 587;
 $email_user = "pruebasoftwarerc@gmail.com";
@@ -21,7 +21,6 @@ if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
 
-// Obtener la fecha actual
 $hoy = date('m-d');
 
 // Obtener los cumpleañeros
@@ -29,13 +28,10 @@ $sql_cumpleaneros = "SELECT nombre, apellido, email FROM usuarios WHERE DATE_FOR
 $result_cumpleaneros = $conn->query($sql_cumpleaneros);
 
 $cumpleaneros = [];
-if ($result_cumpleaneros->num_rows > 0) {
-    while ($row = $result_cumpleaneros->fetch_assoc()) {
-        $cumpleaneros[] = $row;
-    }
+while ($row = $result_cumpleaneros->fetch_assoc()) {
+    $cumpleaneros[] = $row;
 }
 
-// Si no hay cumpleañeros, no enviamos correos
 if (empty($cumpleaneros)) {
     echo "No hay cumpleaños hoy.";
     exit;
@@ -46,33 +42,56 @@ $sql_usuarios = "SELECT email FROM usuarios";
 $result_usuarios = $conn->query($sql_usuarios);
 
 $usuarios = [];
-if ($result_usuarios->num_rows > 0) {
-    while ($row = $result_usuarios->fetch_assoc()) {
-        $usuarios[] = $row['email'];
-    }
+while ($row = $result_usuarios->fetch_assoc()) {
+    $usuarios[] = $row['email'];
 }
 
 $mensajes = [];
 
-// Enviar un correo a cada cumpleañero y a todos los usuarios
-foreach ($cumpleaneros as $cumpleanero) {
-    $nombreCompleto = $cumpleanero['nombre'] . ' ' . $cumpleanero['apellido'];
-    $emailCumpleanero = $cumpleanero['email'];
+$mail = new PHPMailer(true);
+try {
+    $mail->isSMTP();
+    $mail->Host = $smtp_server;
+    $mail->SMTPAuth = true;
+    $mail->Username = $email_user;
+    $mail->Password = $email_pass;
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Port = 587;
+    $mail->setFrom($email_user, "Notificaciones");
+    $mail->isHTML(true);
+    $mail->CharSet = 'UTF-8';
+    $mail->SMTPKeepAlive = true; // Mantiene la conexión SMTP abierta
 
-    // Generar la imagen personalizada
-    $imagenGenerada = generarImagen($nombreCompleto);
+    foreach ($cumpleaneros as $cumpleanero) {
+        $nombreCompleto = $cumpleanero['nombre'] . ' ' . $cumpleanero['apellido'];
+        $imagenGenerada = generarImagen($nombreCompleto);
 
-    // Enviar el correo al cumpleañero
-    $mensaje = enviarCorreo($emailCumpleanero, $nombreCompleto, $imagenGenerada);
-    $mensajes[] = $mensaje;
-
-    // Enviar el mismo correo a todos los demás usuarios
-    foreach ($usuarios as $usuarioEmail) {
-        if ($usuarioEmail !== $emailCumpleanero) { // Evitar enviarle dos veces al cumpleañero
-            $mensaje = enviarCorreo($usuarioEmail, $nombreCompleto, $imagenGenerada);
-            $mensajes[] = $mensaje;
+        if (!file_exists($imagenGenerada)) {
+            $mensajes[] = "❌ Error: La imagen no se generó correctamente para $nombreCompleto.";
+            continue;
         }
+
+        $mail->ClearAllRecipients();
+        $mail->ClearAttachments();
+        $mail->addAddress($cumpleanero['email']);
+        foreach ($usuarios as $usuarioEmail) {
+            if ($usuarioEmail !== $cumpleanero['email']) {
+                $mail->addBCC($usuarioEmail);
+            }
+        }
+
+        $mail->Subject = "¡Feliz Cumpleaños, $nombreCompleto!";
+        $mail->AddEmbeddedImage($imagenGenerada, 'logoimg');
+        $mail->Body = "<div style='text-align: center;'>
+                        <img src='cid:logoimg' alt='Imagen de cumpleaños' style='display: block; margin: 0 auto; max-width: 500px; width: 100%;'>
+                      </div>";
+
+        $mail->send();
+        $mensajes[] = "✅ Correo enviado a $nombreCompleto y notificado a todos.";
     }
+
+} catch (Exception $e) {
+    $mensajes[] = "❌ Error general en el envío de correos: {$mail->ErrorInfo}";
 }
 
 $conn->close();
@@ -81,69 +100,58 @@ $conn->close();
 function generarImagen($nombreCompleto) {
     $imagePath = __DIR__ . "/static/img/fondoimg.png";
     if (!file_exists($imagePath)) {
-        die("Error: La imagen no se encuentra.");
+        return false;
     }
 
     $fontPath = __DIR__ . "/arial/arial.ttf"; // Asegúrate de tener la fuente Arial
     if (!file_exists($fontPath)) {
-        die("Error: No se encontró la fuente.");
+        return false;
     }
 
     $image = imagecreatefrompng($imagePath);
     imagesavealpha($image, true);
     $black = imagecolorallocate($image, 0, 0, 0);
 
-    // Tamaño de fuente principal y para espacios
     $fontSize = 44;
-    $smallFontSize = 20; // Usaremos una fuente más pequeña para espacios
-    $lineHeight = $fontSize + 12; 
-    $smallLineHeight = $smallFontSize + 6; // Espacio más pequeño
+    $smallFontSize = 20;
+    $lineHeight = $fontSize + 12;
+    $smallLineHeight = $smallFontSize + 6;
 
-    // Texto con espacios ajustados
     $textLines = [
         $nombreCompleto,       
-        "", // Espacio pequeño
+        "", 
         "TF AUDITORES Y",
         "ASESORES SAS BIC",
-        "", // Espacio pequeño
+        "", 
         "celebra contigo este día",
         "especial.",
-        "", // Espacio pequeño
+        "", 
         "Te deseamos un año",
         "lleno de alegría, éxito y",
         "que todas tus metas y",
         "propósitos se cumplan.",
-        "", // Espacio pequeño
+        "", 
         "¡Gracias por ser parte",
         "de nuestro equipo!"
     ];
 
-    // Obtener dimensiones de la imagen
     $imageWidth = imagesx($image);
     $imageHeight = imagesy($image);
 
-    // Calcular posición inicial
     $startY = round(($imageHeight - (count($textLines) * $lineHeight)) / 2 + 220);
 
     foreach ($textLines as $i => $line) {
-        if ($line === "") { 
-            // Si es un espacio, usar una fuente más pequeña
-            $y = round($startY + ($i * $smallLineHeight));
-        } else {
-            // Texto normal
-            $y = round($startY + ($i * $lineHeight));
-        }
+        $y = $line === "" ? round($startY + ($i * $smallLineHeight)) : round($startY + ($i * $lineHeight));
 
         $textBox = imagettfbbox($fontSize, 0, $fontPath, $line);
         $textWidth = abs($textBox[2] - $textBox[0]);
-        $x = round(($imageWidth - $textWidth) / 2 + 30); // Mover 30px a la derecha
+        $x = round(($imageWidth - $textWidth) / 2 + 30);
 
         if ($line !== "") {
             imagettftext($image, $fontSize, 0, $x, $y, $black, $fontPath, $line);
         }
     }
 
-    // Guardar la imagen generada
     $imagePathOutput = __DIR__ . "/static/img/cumple_" . str_replace(" ", "_", $nombreCompleto) . ".png";
     imagepng($image, $imagePathOutput);
     imagedestroy($image);
@@ -151,49 +159,6 @@ function generarImagen($nombreCompleto) {
     return $imagePathOutput;
 }
 
-
-
-// Función para enviar correos
-function enviarCorreo($destinatario, $nombre, $imagenPath) {
-    global $smtp_server, $smtp_port, $email_user, $email_pass;
-
-    $mail = new PHPMailer(true);
-    try {
-        $mail->isSMTP();
-        $mail->Host = $smtp_server;
-        $mail->SMTPAuth = true;
-        $mail->Username = $email_user;
-        $mail->Password = $email_pass;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = 587;
-
-        $mail->setFrom($email_user, "Notificaciones");
-        $mail->addAddress($destinatario);
-
-        // Verificar que la imagen existe antes de adjuntarla
-        if (!file_exists($imagenPath)) {
-            return "❌ Error: La imagen generada no se encontró en $imagenPath";
-        }
-
-        // Adjuntar imagen generada
-        $mail->AddEmbeddedImage($imagenPath, 'logoimg');
-
-        // Configuración del mensaje
-        $mail->isHTML(true);
-        $mail->CharSet = 'UTF-8';
-        $mail->Subject = "¡Feliz Cumpleaños, $nombre!";
-        $mail->Body = "
-            <div style='text-align: center;'>
-                <img src='cid:logoimg' alt='Imagen de cumpleaños' style='display: block; margin: 0 auto; max-width: 500px; width: 100%;'>
-            </div>
-        ";    
-
-        $mail->send();
-        return "✅ Correo enviado a $destinatario";
-    } catch (Exception $e) {
-        return "❌ Error enviando correo a $destinatario: {$mail->ErrorInfo}";
-    }
-}
 ?>
 
 <!DOCTYPE html>
