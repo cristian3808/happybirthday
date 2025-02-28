@@ -64,6 +64,7 @@ try {
 
     foreach ($cumpleaneros as $cumpleanero) {
         $nombreCompleto = $cumpleanero['nombre'] . ' ' . $cumpleanero['apellido'];
+        $emailCumpleanero = $cumpleanero['email'];
         $imagenGenerada = generarImagen($nombreCompleto);
 
         if (!file_exists($imagenGenerada)) {
@@ -73,10 +74,13 @@ try {
 
         $mail->ClearAllRecipients();
         $mail->ClearAttachments();
-        $mail->addAddress($cumpleanero['email']);
+        $mail->addAddress($emailCumpleanero);
+
+        $otrosCorreos = [];
         foreach ($usuarios as $usuarioEmail) {
-            if ($usuarioEmail !== $cumpleanero['email']) {
+            if ($usuarioEmail !== $emailCumpleanero) {
                 $mail->addBCC($usuarioEmail);
+                $otrosCorreos[] = $usuarioEmail;
             }
         }
 
@@ -87,7 +91,7 @@ try {
                       </div>";
 
         $mail->send();
-        $mensajes[] = "✅ Correo enviado a $nombreCompleto y notificado a todos.";
+        $mensajes[] = "✅ Correo enviado a: <strong>$emailCumpleanero</strong> | Otros: " . implode(", ", $otrosCorreos);
     }
 
 } catch (Exception $e) {
