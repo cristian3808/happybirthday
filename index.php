@@ -1,181 +1,126 @@
 <?php
+include('config/db.php');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+session_start();
+$error = "";
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $input_usuario = $_POST['usuario'] ?? '';
+    $input_password = $_POST['password'] ?? '';
+    $stmt = $conn->prepare("SELECT id, password FROM admin WHERE usuario = ?");
+    $stmt->bind_param("s", $input_usuario);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-require './vendor/phpmailer/phpmailer/src/Exception.php';
-require './vendor/phpmailer/phpmailer/src/PHPMailer.php';
-require './vendor/phpmailer/phpmailer/src/SMTP.php';
-require './config/db.php';
-
-$smtp_server = "smtp.gmail.com";
-$smtp_port = 587;
-$email_user = "pruebasoftwarerc@gmail.com";
-$email_pass = "abkgbjoekgsvhtnj";
-
-// Conectar a la base de datos
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
-}
-
-$hoy = date('m-d');
-
-// Obtener los cumpleañeros
-$sql_cumpleaneros = "SELECT nombre, apellido, email FROM usuarios WHERE DATE_FORMAT(fecha_nacimiento, '%m-%d') = '$hoy'";
-$result_cumpleaneros = $conn->query($sql_cumpleaneros);
-
-$cumpleaneros = [];
-while ($row = $result_cumpleaneros->fetch_assoc()) {
-    $cumpleaneros[] = $row;
-}
-
-if (empty($cumpleaneros)) {
-    echo "No hay cumpleaños hoy.";
-    exit;
-}
-
-// Obtener la lista de todos los usuarios
-$sql_usuarios = "SELECT email FROM usuarios";
-$result_usuarios = $conn->query($sql_usuarios);
-
-$usuarios = [];
-while ($row = $result_usuarios->fetch_assoc()) {
-    $usuarios[] = $row['email'];
-}
-
-$mensajes = [];
-
-$mail = new PHPMailer(true);
-try {
-    $mail->isSMTP();
-    $mail->Host = $smtp_server;
-    $mail->SMTPAuth = true;
-    $mail->Username = $email_user;
-    $mail->Password = $email_pass;
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port = 587;
-    $mail->setFrom($email_user, "Notificaciones");
-    $mail->isHTML(true);
-    $mail->CharSet = 'UTF-8';
-    $mail->SMTPKeepAlive = true; // Mantiene la conexión SMTP abierta
-
-    foreach ($cumpleaneros as $cumpleanero) {
-        $nombreCompleto = $cumpleanero['nombre'] . ' ' . $cumpleanero['apellido'];
-        $emailCumpleanero = $cumpleanero['email'];
-        $imagenGenerada = generarImagen($nombreCompleto);
-
-        if (!file_exists($imagenGenerada)) {
-            $mensajes[] = "❌ Error: La imagen no se generó correctamente para $nombreCompleto.";
-            continue;
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
+        if (password_verify($input_password, $user['password'])) {
+            $_SESSION['loggedin'] = true;
+            $_SESSION['usuario'] = $input_usuario;
+            $_SESSION['userid'] = $user['id'];
+            header("Location: crud.php");
+            exit;
+        } else {
+            $error = "Contraseña incorrecta.";
         }
-
-        $mail->ClearAllRecipients();
-        $mail->ClearAttachments();
-        $mail->addAddress($emailCumpleanero);
-
-        $otrosCorreos = [];
-        foreach ($usuarios as $usuarioEmail) {
-            if ($usuarioEmail !== $emailCumpleanero) {
-                $mail->addBCC($usuarioEmail);
-                $otrosCorreos[] = $usuarioEmail;
-            }
-        }
-
-        $mail->Subject = "¡Feliz Cumpleaños, $nombreCompleto!";
-        $mail->AddEmbeddedImage($imagenGenerada, 'logoimg');
-        $mail->Body = "<div style='text-align: center;'>
-                        <img src='cid:logoimg' alt='Imagen de cumpleaños' style='display: block; margin: 0 auto; max-width: 500px; width: 100%;'>
-                      </div>";
-
-        $mail->send();
-        $mensajes[] = "✅ Correo enviado a: <strong>$emailCumpleanero</strong> | Otros: " . implode(", ", $otrosCorreos);
+    } else {
+        $error = "Usuario no encontrado.";
     }
-
-} catch (Exception $e) {
-    $mensajes[] = "❌ Error general en el envío de correos: {$mail->ErrorInfo}";
+    $stmt->close();
 }
-
 $conn->close();
-
-// Función para generar la imagen con el nombre del cumpleañero
-function generarImagen($nombreCompleto) {
-    $imagePath = __DIR__ . "/static/img/fondoimg.png";
-    if (!file_exists($imagePath)) {
-        return false;
-    }
-
-    $fontPath = __DIR__ . "/arial/arial.ttf"; // Asegúrate de tener la fuente Arial
-    if (!file_exists($fontPath)) {
-        return false;
-    }
-
-    $image = imagecreatefrompng($imagePath);
-    imagesavealpha($image, true);
-    $black = imagecolorallocate($image, 0, 0, 0);
-
-    $fontSize = 44;
-    $smallFontSize = 20;
-    $lineHeight = $fontSize + 12;
-    $smallLineHeight = $smallFontSize + 6;
-
-    $textLines = [
-        $nombreCompleto,       
-        "", 
-        "TF AUDITORES Y",
-        "ASESORES SAS BIC",
-        "", 
-        "celebra contigo este día",
-        "especial.",
-        "", 
-        "Te deseamos un año",
-        "lleno de alegría, éxito y",
-        "que todas tus metas y",
-        "propósitos se cumplan.",
-        "", 
-        "¡Gracias por ser parte",
-        "de nuestro equipo!"
-    ];
-
-    $imageWidth = imagesx($image);
-    $imageHeight = imagesy($image);
-
-    $startY = round(($imageHeight - (count($textLines) * $lineHeight)) / 2 + 220);
-
-    foreach ($textLines as $i => $line) {
-        $y = $line === "" ? round($startY + ($i * $smallLineHeight)) : round($startY + ($i * $lineHeight));
-
-        $textBox = imagettfbbox($fontSize, 0, $fontPath, $line);
-        $textWidth = abs($textBox[2] - $textBox[0]);
-        $x = round(($imageWidth - $textWidth) / 2 + 30);
-
-        if ($line !== "") {
-            imagettftext($image, $fontSize, 0, $x, $y, $black, $fontPath, $line);
-        }
-    }
-
-    $imagePathOutput = __DIR__ . "/static/img/cumple_" . str_replace(" ", "_", $nombreCompleto) . ".png";
-    imagepng($image, $imagePathOutput);
-    imagedestroy($image);
-
-    return $imagePathOutput;
-}
-
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estado del Envío</title>
-</head>
-<body>
-    <h2>Resultado del envío de correos</h2>
-    <ul>
-        <?php foreach ($mensajes as $mensaje) { echo "<li>$mensaje</li>"; } ?>
-    </ul>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Cristian Alejandro Jiménez Mora">
+        <link rel="icon" href="/static/img/TF.ico" type="image/x-icon">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <title>TF Formatos RRHH</title>
+        <style>
+            .background-color {
+                background-color: #E1EEE2;
+                background-size: cover;
+                background-position: center;
+            }
+            .overlay {
+                background: rgba(255, 255, 255, 0.8);
+            }
+            .disabled-button {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        </style>
+    </head>
+    <body class="flex flex-col items-center min-h-screen background-color">
+    <header class="text-gray-600 body-font w-full bg-white">
+        <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+            <nav class="md:ml-auto md:mr-auto flex flex-wrap items-center text-base justify-center">
+                <a href="https://tfauditores.com/">
+                    <img src="/static/img/TF.png" alt="Logo-TF" class="h-20">
+                </a>
+            </nav>
+        </div>
+    </header>
+        <div class="overlay p-10 rounded-lg shadow-xl max-w-md text-center mt-20 sm:mt-16 md:mt-32">
+            <h2 class="text-3xl font-bold mb-6 text-gray-700">¡Bienvenido a TF!</h2>
+            <p class="mb-8 text-gray-600">Por favor ingresa tu usuario y contraseña para continuar.</p>
+
+            <!-- Mostrar errores si existen -->
+            <?php if (isset($error)) { ?>
+                <div class="text-red-600 mb-4"><?php echo $error; ?></div>
+            <?php } ?>
+
+            <form method="POST" action="index.php">
+                <div class="mb-4">
+                    <label for="usuario" class="block text-left text-gray-700 font-semibold">Usuario</label>
+                    <input type="text" id="usuario" name="usuario" placeholder="Tu usuario" class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required minlength="5" maxlength="13">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-left text-gray-700 font-semibold">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Tu contraseña" class="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required minlength="6" maxlength="10">
+                </div>
+                <div class="flex gap-4 justify-center">
+                    <button type="submit" class="bg-green-600 hover:bg-lime-500 text-white font-bold py-3 px-6 rounded-lg shadow-md transform transition hover:scale-105 duration-200 w-full md:w-auto">
+                        Iniciar sesión
+                    </button>
+                </div>
+            </form>
+        </div>
+        <footer class="bg-white text-gray-600 body-font fixed bottom-0 w-full">
+            <div class="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
+                <p id="year" class="text-sm text-gray-700 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© <span id="current-year"></span> TF AUDITORES</p>
+                <span class="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
+                    <a href="https://www.facebook.com/people/TF-Auditores-y-Asesores-SAS-BIC/100065088457000/" class="text-gray-700 hover:text-blue-500">
+                        <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
+                            <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://www.instagram.com/tfauditores/" class="ml-3 text-gray-700 hover:text-pink-500">
+                        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
+                            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01"></path>
+                        </svg>
+                    </a>
+                    <a href="https://www.linkedin.com/uas/index?session_redirect=https%3A%2F%2Fwww.linkedin.com%2Fcompany%2F10364571%2Fadmin%2Fdashboard%2F" class="ml-3 text-gray-700 hover:text-blue-300">
+                        <svg fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="0" class="w-5 h-5" viewBox="0 0 24 24">
+                            <path stroke="none" d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path>
+                            <circle cx="4" cy="4" r="2" stroke="none"></circle>
+                        </svg>
+                    </a>
+                </span>
+            </div>
+        </footer>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const currentYear = new Date().getFullYear();
+                document.getElementById('current-year').textContent = currentYear;
+            });
+        </script>
+    </body>
 </html>
+

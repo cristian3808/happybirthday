@@ -61,10 +61,11 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
                 onkeyup="filtrarUsuarios()">
         </div>
         <!-- Botón para agregar usuario -->
-        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full flex items-center gap-x-3 ml-[700px]"
+        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full flex items-center gap-x-3 ml-[550px]"
                 onclick="agregarUsuario()">
             <img src="/static/img/agregar.svg" alt="" class="h-5 w-5"><strong>Agregar Usuario</strong>
         </button>
+        <a href="/enviar.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full items-center gap-x-3 relative left-[-15px]">¡Felicitar Ahora! 🎉</a>
     </div>
     <script>
     function capitalizarTexto(texto) {
@@ -78,6 +79,7 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
                     <input id='nombre' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Nombres' oninput="this.value = capitalizarTexto(this.value)">
                     <input id='apellido' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Apellidos' >
                     <input id='email' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Email'>
+                    <label>Fecha de nacimiento</label>
                     <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date'>
                 </div>
             `,
@@ -202,6 +204,7 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
                         <input id='nombre' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Nombre' value='${nombre}'>
                         <input id='apellido' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Apellido' value='${apellido}'>
                         <input id='email' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Email' value='${email}'>
+                        <label>Fecha de nacimiento</label>
                         <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date' value='${fecha}'>
                     </div>
                 `,
