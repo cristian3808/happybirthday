@@ -78,6 +78,8 @@ try {
         $emailCumpleanero = $cumpleanero['email'];
 
         $mail->ClearAllRecipients();
+        $mail->clearAttachments(); // ✅ Limpia adjuntos anteriores
+
         $mail->addAddress($emailCumpleanero);
 
         foreach ($usuarios as $usuarioEmail) {
@@ -87,7 +89,29 @@ try {
         }
 
         $mail->Subject = "¡Feliz Cumpleaños, $nombreCompleto!";
-        $mail->Body = "<p>¡Feliz cumpleaños, $nombreCompleto!</p>";
+        // Generar la imagen personalizada
+        $imagenCumple = generarImagen($nombreCompleto);
+
+        // Adjuntar la imagen inline (como cid)
+        $mail->addEmbeddedImage($imagenCumple, 'imagenCumple', 'cumple.png');
+
+        // Cambiar el cuerpo del correo a HTML con imagen incrustada
+        $mail->Body = "
+        <html>
+        <body style='font-family: Arial, sans-serif; color: #333; padding: 20px;'>
+            <p style='font-size: 18px; line-height: 1.5;'>
+                Buen día <strong>$nombreCompleto</strong>,<br><br>
+                <strong>TF Auditores y Asesores</strong> celebra contigo este nuevo año de vida.<br>
+                Que todos tus propósitos y anhelos se conviertan en realidad.<br><br>
+                <span style='font-size: 20px;'>¡FELIZ CUMPLEAÑOS 🎂🥳🎉🎊!</span>
+            </p>
+            <div style='text-align: center; margin-top: 20px;'>
+                <img src='cid:imagenCumple' alt='Feliz Cumpleaños' style='max-width: 380px; width: 100%; border-radius: 12px;' />
+            </div>
+        </body>
+        </html>
+    ";
+
 
         $mail->send();
         $mensajes[] = "✅ Correo enviado a: <strong>$emailCumpleanero</strong>";
@@ -165,7 +189,6 @@ function generarImagen($nombreCompleto) {
 
     return $imagePathOutput;
 }
-
 ?>
 
 <!DOCTYPE html>
