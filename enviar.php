@@ -16,14 +16,13 @@ $smtp_port = 587;
 $email_user = "pruebasoftwarerc@gmail.com";
 $email_pass = "abkgbjoekgsvhtnj";
 
-// Conectar a la base de datos
 $conn = new mysqli($servername, $db_username, $db_password, $dbname);
 if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
 
 $hoy = date('Y-m-d');
-$emailUsuario = "correo@ejemplo.com"; // Reemplázalo con el email del usuario logueado
+$emailUsuario = "correo@ejemplo.com"; 
 
 // Verificar si el usuario ya envió correos hoy
 $sql_verificar = "SELECT * FROM envios_cumpleanos WHERE usuario_email = '$emailUsuario' AND fecha_envio = CURDATE()";
@@ -43,7 +42,6 @@ while ($row = $result_cumpleaneros->fetch_assoc()) {
 
 if (empty($cumpleaneros)) {
     echo "No hay cumpleaños hoy.";
-    // Registrar en la BD que ya se revisó hoy
     $sql_insertar = "INSERT INTO envios_cumpleanos (usuario_email, fecha_envio) VALUES ('$emailUsuario', CURDATE())";
     $conn->query($sql_insertar);
     exit;
@@ -78,7 +76,7 @@ try {
         $emailCumpleanero = $cumpleanero['email'];
 
         $mail->ClearAllRecipients();
-        $mail->clearAttachments(); // ✅ Limpia adjuntos anteriores
+        $mail->clearAttachments(); 
 
         $mail->addAddress($emailCumpleanero);
 
@@ -89,12 +87,9 @@ try {
         }
 
         $mail->Subject = "¡Feliz Cumpleaños, $nombreCompleto!";
-        // Generar la imagen personalizada
         $imagenCumple = generarImagen($nombreCompleto);
-
         // Adjuntar la imagen inline (como cid)
         $mail->addEmbeddedImage($imagenCumple, 'imagenCumple', 'cumple.png');
-
         // Cambiar el cuerpo del correo a HTML con imagen incrustada
         $mail->Body = "
         <html>
@@ -110,9 +105,7 @@ try {
             </div>
         </body>
         </html>
-    ";
-
-
+        ";
         $mail->send();
         $mensajes[] = "✅ Correo enviado a: <strong>$emailCumpleanero</strong>";
     }
@@ -134,7 +127,7 @@ function generarImagen($nombreCompleto) {
         return false;
     }
 
-    $fontPath = __DIR__ . "/arial/arial.ttf"; // Asegúrate de tener la fuente Arial
+    $fontPath = __DIR__ . "/arial/arial.ttf"; 
     if (!file_exists($fontPath)) {
         return false;
     }
@@ -190,7 +183,6 @@ function generarImagen($nombreCompleto) {
     return $imagePathOutput;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>

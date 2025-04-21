@@ -32,15 +32,15 @@ if (isset($_GET['id'])) {
 
     $stmt->close();
     $conn->close();
-} else {
-    echo "<script>
-            Swal.fire({
-                title: 'Error',
-                text: 'ID de usuario no válido.',
-                icon: 'error'
-            }).then(() => {
-                window.history.back();
-            });
-          </script>";
-}
+    } else {
+        echo "<script>
+                Swal.fire({
+                    title: 'Error',
+                    text: 'ID de usuario no válido.',
+                    icon: 'error'
+                }).then(() => {
+                    window.history.back();
+                });
+            </script>";
+    }
 ?>

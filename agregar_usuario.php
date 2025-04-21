@@ -23,8 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               </script>";
         exit;
     }
-
-    // Evitar inyección SQL con prepared statements
+    
     $query = "INSERT INTO usuarios (nombre, apellido, email, fecha_nacimiento) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("ssss", $nombre, $apellido, $email, $fecha_nacimiento);

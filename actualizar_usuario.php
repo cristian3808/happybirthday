@@ -23,7 +23,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // Actualizar en la BD
     $query = "UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, fecha_nacimiento = ? WHERE id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("ssssi", $nombre, $apellido, $email, $fecha_nacimiento, $id);

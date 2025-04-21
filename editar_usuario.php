@@ -25,20 +25,19 @@ if (isset($_GET['id'])) {
     }
 
     $stmt->close();
-} else {
-    echo "<script>
-            Swal.fire({
-                title: 'Error',
-                text: 'ID de usuario no válido.',
-                icon: 'error'
-            }).then(() => {
-                window.history.back();
-            });
-          </script>";
-    exit;
-}
+    } else {
+        echo "<script>
+                Swal.fire({
+                    title: 'Error',
+                    text: 'ID de usuario no válido.',
+                    icon: 'error'
+                }).then(() => {
+                    window.history.back();
+                });
+            </script>";
+        exit;
+    }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
