@@ -13,8 +13,8 @@ require './config/db.php';
 
 $smtp_server = "smtp.gmail.com";
 $smtp_port = 587;
-$email_user = "seleccion@tfauditores.com";
-$email_pass = "mwcpxjivpngbvqnx";
+$email_user = "comites@tfauditores.com";
+$email_pass = "rctmuyhilxjwebsn";
 
 $conn = new mysqli($servername, $db_username, $db_password, $dbname);
 if ($conn->connect_error) {
