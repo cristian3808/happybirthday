@@ -27,9 +27,8 @@ if (isset($_GET['delete'])) {
     }
 }
 
-$result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: " . $conn->error);
+$result = $conn->query("SELECT * FROM usuarios WHERE genero = 'masculino'") or die("Error en la consulta: " . $conn->error);
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -70,8 +69,8 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
                 onclick="agregarUsuario()">
             <img src="/static/img/agregar.svg" alt="" class="h-5 w-5"><strong>Agregar Usuario</strong>
         </button>
-        <a href="/enviar.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full items-center gap-x-3 relative left-[-15px]">¡Felicitar Ahora! 🎉</a>
-    </div>
+        <a href="enviar_dia_hombre.php?enviar=true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full items-center gap-x-3 relative left-[-15px]">¡Felicitar Ahora! 🎉</a>
+        </div>
     <script>
     function capitalizarTexto(texto) {
         return texto.toLowerCase().replace(/\b\w/g, (letra) => letra.toUpperCase());
@@ -140,6 +139,7 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
                     <tr class="bg-green-700 text-white ">
                         <th class="py-2 border-r border-gray-300 text-center w-[200px]">Nombres</th>
                         <th class="py-2 border-r border-gray-300 text-center w-[200px]">Apellidos</th>
+                        <th class="py-2 border-r border-gray-300 text-center w-[200px]">Genero</th>
                         <th class="py-2 border-r border-gray-300 text-center w-[200px]">Correo electronico</th>
                         <th class="py-2 border-r border-gray-300 text-center w-[150px]">Fecha de Nacimiento</th>
                         <th class="py-2 text-center last:rounded-tr-lg w-[120px]">Acciones</th>
@@ -150,11 +150,12 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
                         <tr class="hover:bg-gray-100 transition-all border-l-4 border-transparent hover:border-green-500 first:rounded-t-lg last:rounded-b-lg">
                             <td class="py-1 px-4 border-r border-gray-300"><?= $row['nombre'] ?></td>
                             <td class="py-1 px-4 border-r border-gray-300"><?= $row['apellido'] ?></td>
+                            <td class="py-1 px-4 border-r border-gray-300"><?= $row['genero'] ?></td>
                             <td class="py-1 px-4 border-r border-gray-300"><?= $row['email'] ?></td>
                             <td class="py-1 px-4 border-r border-gray-300 text-center"><?= $row['fecha_nacimiento'] ?></td>
                             <td class="py-1 px-4 flex justify-center space-x-2">
                                 <button class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-full transition-all flex items-center space-x-4"
-                                        onclick="editarUsuario(<?= $row['id'] ?>, '<?= $row['nombre'] ?>', '<?= $row['apellido'] ?>', '<?= $row['email'] ?>', '<?= $row['fecha_nacimiento'] ?>')">
+                                        onclick="editarUsuario(<?= $row['id'] ?>, '<?= $row['nombre'] ?>', '<?= $row['apellido'] ?>', '<?= $row['genero'] ?>', '<?= $row['email'] ?>', '<?= $row['fecha_nacimiento'] ?>')">
                                         <img src="/static/img/editar.svg" alt="" class="w-5 h-5">
                                         Editar
                                 </button>
