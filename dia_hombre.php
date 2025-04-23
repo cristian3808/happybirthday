@@ -36,9 +36,10 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'masculino'") or d
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <title>Usuarios</title>
+    <title>DIA DEL HOMBRE</title>
 </head>
 <body class="bg-[#E1EEE2] font-sans">
+
 
 <header class="w-full bg-white mb-10 border-b-4 border-green-900">
     <div class="container mx-auto flex justify-between items-center p-5">
@@ -49,9 +50,9 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'masculino'") or d
         </nav>
          <!-- Menú de navegación (se oculta en pantallas pequeñas) -->
         <nav id="navMenu" class="hidden lg:flex lg:items-center lg:space-x-8">
-            <a href="crud.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-220px]">CUMPLEAÑOS</a>
-            <a href="dia_hombre.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-200px]">DIA DEL HOMBRE</a>
-            <a href="dia_mujer.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-200px]">DIA DE LA MUJER</a>
+            <a href="crud.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-150px]">CUMPLEAÑOS</a>
+            <a href="dia_hombre.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-90px]">DIA DEL HOMBRE</a>
+            <a href="dia_mujer.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-60px]">DIA DE LA MUJER</a>
         </nav>
         <a href="../../../logout.php" class="bg-green-600 hover:bg-lime-500 text-white font-bold py-3 px-6 rounded-lg shadow-md flex items-center">
             <img src="/static/img/cerrarsesion.png" class="w-4 h-4 mr-2"> CERRAR SESIÓN
@@ -66,11 +67,11 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'masculino'") or d
                 onkeyup="filtrarUsuarios()">
         </div>
         <!-- Botón para agregar usuario -->
-        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full flex items-center gap-x-3 ml-[550px]"
+        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full flex items-center gap-x-3 ml-[500px]"
                 onclick="agregarUsuario()">
             <img src="/static/img/agregar.svg" alt="" class="h-5 w-5"><strong>Agregar Usuario</strong>
         </button>
-        <a href="enviar_dia_hombre.php?enviar=true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full items-center gap-x-3 relative left-[-15px]">¡Felicitar Ahora! 🎉</a>
+        <a href="enviar_dia_hombre.php?enviar=true" class="bg-blue-700 hover:bg-blue-500 text-white px-4 py-2 rounded-full items-center gap-x-3 relative left-[-20px]">🎩 ¡Felicitar Dia Del Hombre! </a>
         </div>
     <script>
     function capitalizarTexto(texto) {

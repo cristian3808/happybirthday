@@ -78,7 +78,7 @@ foreach ($usuarios as $usuarioEmail) {
         <html>
        <body style='font-family: Arial, sans-serif; color: #333; padding: 20px;'>
             <p style='font-size: 18px; line-height: 1.5;'>
-                Buen día <strong>Compañero</strong>,<br><br>
+                Buen día <strong>Compañera</strong>,<br><br>
                 <strong>TF Auditores y Asesores</strong> te felicita en este día tan especial.<br><br>
                 <span style='font-size: 20px;'>¡FELIZ DÍA DE LA MUJER 💐🌸👩‍💼!</span>
             </p>
@@ -93,7 +93,7 @@ foreach ($usuarios as $usuarioEmail) {
         $mensajes[] = "✅ Correo enviado a: <strong>$usuarioEmail</strong>";
 
         // Registrar que el correo ha sido enviado
-        $sql_insertar = "INSERT INTO envios_dia_hombre (usuario_email, fecha_envio) VALUES ('$usuarioEmail', '$hoy')";
+        $sql_insertar = "INSERT INTO envios_dia_mujer (usuario_email, fecha_envio) VALUES ('$usuarioEmail', '$hoy')";
         $conn->query($sql_insertar);
 
     } catch (Exception $e) {
