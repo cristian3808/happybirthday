@@ -27,7 +27,7 @@ if (isset($_GET['delete'])) {
     }
 }
 
-$result = $conn->query("SELECT * FROM usuarios WHERE genero = 'masculino'") or die("Error en la consulta: " . $conn->error);
+$result = $conn->query("SELECT * FROM usuarios WHERE genero = 'femenino'") or die("Error en la consulta: " . $conn->error);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -70,54 +70,54 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'masculino'") or d
                 onclick="agregarUsuario()">
             <img src="/static/img/agregar.svg" alt="" class="h-5 w-5"><strong>Agregar Usuario</strong>
         </button>
-        <a href="enviar_dia_hombre.php?enviar=true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full items-center gap-x-3 relative left-[-15px]">¡Felicitar Ahora! 🎉</a>
+        <a href="enviar_dia_mujer.php?enviar=true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full items-center gap-x-3 relative left-[-15px]">¡Felicitar Ahora! 🎉</a>
         </div>
     <script>
-    function capitalizarTexto(texto) {
-        return texto.toLowerCase().replace(/\b\w/g, (letra) => letra.toUpperCase());
-    }
-    function agregarUsuario() {
-        Swal.fire({
-            title: "Agregar Usuario",
-            html: `
-                <div class="w-[350px] mx-auto flex flex-col space-y-3">
-                    <input id='nombre' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Nombres' oninput="this.value = capitalizarTexto(this.value)">
-                    <input id='apellido' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Apellidos' >
-                    <input id='email' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Email'>
-                    <label>Fecha de nacimiento</label>
-                    <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date'>
-                </div>
-            `,
-            showCancelButton: true,
-            confirmButtonText: "Guardar",
-            cancelButtonText: "Cancelar",
-            customClass: {
-                confirmButton: "bg-green-600 hover:bg-lime-500 text-white font-bold py-2 px-4 rounded",
-                cancelButton: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
-                actions: "flex justify-center gap-x-3"
-            },
-            buttonsStyling: false,
-            preConfirm: () => {
-                const nombre = document.getElementById('nombre').value;
-                const apellido = document.getElementById('apellido').value;
-                const email = document.getElementById('email').value;
-                const fecha = document.getElementById('fecha').value;
+        function capitalizarTexto(texto) {
+            return texto.toLowerCase().replace(/\b\w/g, (letra) => letra.toUpperCase());
+        }
+        function agregarUsuario() {
+            Swal.fire({
+                title: "Agregar Usuario",
+                html: `
+                    <div class="w-[350px] mx-auto flex flex-col space-y-3">
+                        <input id='nombre' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Nombres' oninput="this.value = capitalizarTexto(this.value)">
+                        <input id='apellido' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Apellidos' >
+                        <input id='email' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Email'>
+                        <label>Fecha de nacimiento</label>
+                        <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date'>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: "Guardar",
+                cancelButtonText: "Cancelar",
+                customClass: {
+                    confirmButton: "bg-green-600 hover:bg-lime-500 text-white font-bold py-2 px-4 rounded",
+                    cancelButton: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
+                    actions: "flex justify-center gap-x-3"
+                },
+                buttonsStyling: false,
+                preConfirm: () => {
+                    const nombre = document.getElementById('nombre').value;
+                    const apellido = document.getElementById('apellido').value;
+                    const email = document.getElementById('email').value;
+                    const fecha = document.getElementById('fecha').value;
 
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = 'crud.php';
-                form.innerHTML = `
-                    <input type='hidden' name='nombre' value='${nombre}'>
-                    <input type='hidden' name='apellido' value='${apellido}'>
-                    <input type='hidden' name='email' value='${email}'>
-                    <input type='hidden' name='fecha_nacimiento' value='${fecha}'>
-                    <input type='hidden' name='agregar' value='1'>
-                `;
-                document.body.appendChild(form);
-                form.submit();
-            }
-        });
-    }
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'crud.php';
+                    form.innerHTML = `
+                        <input type='hidden' name='nombre' value='${nombre}'>
+                        <input type='hidden' name='apellido' value='${apellido}'>
+                        <input type='hidden' name='email' value='${email}'>
+                        <input type='hidden' name='fecha_nacimiento' value='${fecha}'>
+                        <input type='hidden' name='agregar' value='1'>
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
     </script>
     <?php
     if (isset($_POST['agregar'])) {
