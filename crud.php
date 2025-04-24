@@ -8,10 +8,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar'])) {
     $id = intval($_POST['id']);
     $nombre = $conn->real_escape_string($_POST['nombre']);
     $apellido = $conn->real_escape_string($_POST['apellido']);
+    $genero = $conn->real_escape_string($_POST['genero']);
     $email = $conn->real_escape_string($_POST['email']);
     $fecha_nacimiento = $conn->real_escape_string($_POST['fecha_nacimiento']);
+    $tiene_hijos = $conn->real_escape_string($_POST['tiene_hijos']);
 
-    if ($conn->query("UPDATE usuarios SET nombre='$nombre', apellido='$apellido', email='$email', fecha_nacimiento='$fecha_nacimiento' WHERE id=$id")) {
+    if ($conn->query("UPDATE usuarios SET nombre='$nombre', apellido='$apellido', genero='$genero', email='$email', fecha_nacimiento='$fecha_nacimiento', tiene_hijos='$tiene_hijos' WHERE id=$id")) {
         echo "<script>Swal.fire('Actualizado', 'Usuario actualizado correctamente', 'success').then(() => { location.reload(); });</script>";
     } else {
         echo "<script>Swal.fire('Error', 'No se pudo actualizar', 'error');</script>";
@@ -49,9 +51,11 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
         </nav>
          <!-- Menú de navegación (se oculta en pantallas pequeñas) -->
         <nav id="navMenu" class="hidden lg:flex lg:items-center lg:space-x-8">
-            <a href="crud.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-150px]">CUMPLEAÑOS</a>
-            <a href="dia_hombre.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-90px]">DIA DEL HOMBRE</a>
+            <a href="crud.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-80px]">CUMPLEAÑOS</a>
+            <a href="dia_hombre.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-70px]">DIA DEL HOMBRE</a>
             <a href="dia_mujer.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-60px]">DIA DE LA MUJER</a>
+            <a href="dia_padre.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-50px]">DIA DEL PADRE</a>
+            <a href="dia_madre.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-40px]">DIA DE LA MADRE</a>
         </nav>
         <a href="../../../logout.php" class="bg-green-600 hover:bg-lime-500 text-white font-bold py-3 px-6 rounded-lg shadow-md flex items-center">
             <img src="/static/img/cerrarsesion.png" class="w-4 h-4 mr-2"> CERRAR SESIÓN
@@ -83,9 +87,19 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
                 <div class="w-[350px] mx-auto flex flex-col space-y-3">
                     <input id='nombre' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Nombres' oninput="this.value = capitalizarTexto(this.value)">
                     <input id='apellido' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Apellidos' >
+                    <select id="genero" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                        <option value="" disabled selected>Selecciona el genero</option>
+                        <option value="masculino">Masculino</option>
+                        <option value="femenino">Femenino</option>
+                    </select>  
                     <input id='email' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Email'>
                     <label>Fecha de nacimiento</label>
                     <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date'>
+                    <select id="tiene_hijos" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                        <option value="" disabled selected>¿Tiene hijos?</option>
+                        <option value="si">Sí</option>
+                        <option value="no">No</option>
+                    </select>    
                 </div>
             `,
             showCancelButton: true,
@@ -100,8 +114,10 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
             preConfirm: () => {
                 const nombre = document.getElementById('nombre').value;
                 const apellido = document.getElementById('apellido').value;
+                const genero = document.getElementById('genero').value;
                 const email = document.getElementById('email').value;
                 const fecha = document.getElementById('fecha').value;
+                const tiene_hijos = document.getElementById('tiene_hijos').value;
 
                 const form = document.createElement('form');
                 form.method = 'POST';
@@ -109,8 +125,10 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
                 form.innerHTML = `
                     <input type='hidden' name='nombre' value='${nombre}'>
                     <input type='hidden' name='apellido' value='${apellido}'>
+                    <input type='hidden' name='genero' value='${genero}'>
                     <input type='hidden' name='email' value='${email}'>
                     <input type='hidden' name='fecha_nacimiento' value='${fecha}'>
+                    <input type='hidden' name='tiene_hijos' value='${tiene_hijos}'>
                     <input type='hidden' name='agregar' value='1'>
                 `;
                 document.body.appendChild(form);
@@ -123,10 +141,12 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
     if (isset($_POST['agregar'])) {
         $nombre = $_POST['nombre'];
         $apellido = $_POST['apellido'];
+        $genero = $_POST['genero'];
         $email = $_POST['email'];
         $fecha_nacimiento = $_POST['fecha_nacimiento'];
+        $tiene_hijos = $_POST['tiene_hijos'];
 
-        $insertQuery = "INSERT INTO usuarios (nombre, apellido, email, fecha_nacimiento) VALUES ('$nombre', '$apellido', '$email', '$fecha_nacimiento')";
+        $insertQuery = "INSERT INTO usuarios (nombre, apellido, genero, email, fecha_nacimiento, tiene_hijos) VALUES ('$nombre', '$apellido', '$genero', '$email', '$fecha_nacimiento', '$tiene_hijos')";
         if ($conn->query($insertQuery) === TRUE) {
             echo "<script>Swal.fire('Agregado', 'Usuario agregado correctamente', 'success').then(() => window.location.href='crud.php');</script>";
         } else {
@@ -140,8 +160,10 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
                     <tr class="bg-green-700 text-white ">
                         <th class="py-2 border-r border-gray-300 text-center w-[200px]">Nombres</th>
                         <th class="py-2 border-r border-gray-300 text-center w-[200px]">Apellidos</th>
+                        <th class="py-2 border-r border-gray-300 text-center w-[200px]">Genero</th>
                         <th class="py-2 border-r border-gray-300 text-center w-[200px]">Correo electronico</th>
                         <th class="py-2 border-r border-gray-300 text-center w-[150px]">Fecha de Nacimiento</th>
+                        <th class="py-2 border-r border-gray-300 text-center w-[150px]">Tiene hijos</th>
                         <th class="py-2 text-center last:rounded-tr-lg w-[120px]">Acciones</th>
                     </tr>
                 </thead>
@@ -150,11 +172,13 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
                         <tr class="hover:bg-gray-100 transition-all border-l-4 border-transparent hover:border-green-500 first:rounded-t-lg last:rounded-b-lg">
                             <td class="py-1 px-4 border-r border-gray-300"><?= $row['nombre'] ?></td>
                             <td class="py-1 px-4 border-r border-gray-300"><?= $row['apellido'] ?></td>
+                            <td class="py-1 px-4 border-r border-gray-300"><?= $row['genero'] ?></td>
                             <td class="py-1 px-4 border-r border-gray-300"><?= $row['email'] ?></td>
                             <td class="py-1 px-4 border-r border-gray-300 text-center"><?= $row['fecha_nacimiento'] ?></td>
+                            <td class="py-1 px-4 border-r border-gray-300"><?= $row['tiene_hijos'] ?></td>
                             <td class="py-1 px-4 flex justify-center space-x-2">
                                 <button class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-full transition-all flex items-center space-x-4"
-                                        onclick="editarUsuario(<?= $row['id'] ?>, '<?= $row['nombre'] ?>', '<?= $row['apellido'] ?>', '<?= $row['email'] ?>', '<?= $row['fecha_nacimiento'] ?>')">
+                                        onclick="editarUsuario(<?= $row['id'] ?>, '<?= $row['nombre'] ?>', '<?= $row['apellido'] ?>', '<?= $row['genero'] ?>', '<?= $row['email'] ?>', '<?= $row['fecha_nacimiento'] ?>', '<?= $row['tiene_hijos'] ?>')">
                                         <img src="/static/img/editar.svg" alt="" class="w-5 h-5">
                                         Editar
                                 </button>
@@ -201,16 +225,26 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
             });
         }
 
-        function editarUsuario(id, nombre, apellido, email, fecha) {
+        function editarUsuario(id, nombre, apellido, genero, email, fecha, tiene_hijos) {
             Swal.fire({
                 title: "Editar Usuario",
                 html: `
                     <div class="w-[350px] mx-auto flex flex-col space-y-3">
                         <input id='nombre' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Nombre' value='${nombre}'>
                         <input id='apellido' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Apellido' value='${apellido}'>
+                        <select id="genero" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                            <option value="" disabled ${genero === '' ? 'selected' : ''}>Selecciona el genero</option>
+                            <option value="masculino" ${genero === 'masculino' ? 'selected' : ''}>Masculino</option>
+                            <option value="femenino" ${genero === 'femenino' ? 'selected' : ''}>Femenino</option>
+                        </select>
                         <input id='email' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Email' value='${email}'>
                         <label>Fecha de nacimiento</label>
                         <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date' value='${fecha}'>
+                        <select id="tiene_hijos" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                            <option value="" disabled ${tiene_hijos === '' ? 'selected' : ''}>¿Tiene hijos?</option>
+                            <option value="si" ${tiene_hijos === 'si' ? 'selected' : ''}>Sí</option>
+                            <option value="no" ${tiene_hijos === 'no' ? 'selected' : ''}>No</option>
+                        </select>
                     </div>
                 `,
                 showCancelButton: true,
@@ -230,8 +264,10 @@ $result = $conn->query("SELECT * FROM usuarios") or die("Error en la consulta: "
                         <input type='hidden' name='id' value='${id}'>
                         <input type='hidden' name='nombre' value='${document.getElementById('nombre').value}'>
                         <input type='hidden' name='apellido' value='${document.getElementById('apellido').value}'>
+                        <input type='hidden' name='genero' value='${document.getElementById('genero').value}'>
                         <input type='hidden' name='email' value='${document.getElementById('email').value}'>
                         <input type='hidden' name='fecha_nacimiento' value='${document.getElementById('fecha').value}'>
+                        <input type='hidden' name='tiene_hijos' value='${document.getElementById('tiene_hijos').value}'>
                         <input type='hidden' name='editar' value='1'>
                     `;
                     document.body.appendChild(form);

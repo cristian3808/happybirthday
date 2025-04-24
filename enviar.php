@@ -13,7 +13,9 @@ require './config/db.php';
 
 $smtp_server = "smtp.gmail.com";
 $smtp_port = 587;
+// Correo de contraseña de aplicacion
 $email_user = "comites@tfauditores.com";
+// Contraseña del correo
 $email_pass = "rctmuyhilxjwebsn";
 
 $conn = new mysqli($servername, $db_username, $db_password, $dbname);
@@ -140,7 +142,8 @@ function generarImagen($nombreCompleto) {
     $smallFontSize = 20;
     $lineHeight = $fontSize + 12;
     $smallLineHeight = $smallFontSize + 6;
-
+ 
+    // Texto para agregar a la imagen que se envia por correo
     $textLines = [
         $nombreCompleto,       
         "", 

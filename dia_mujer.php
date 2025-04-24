@@ -39,7 +39,6 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'femenino'") or di
     <title>DIA DE LA MUJER</title>
 </head>
 <body class="bg-[#E1EEE2] font-sans">
-
 <header class="w-full bg-white mb-10 border-b-4 border-green-900">
     <div class="container mx-auto flex justify-between items-center p-5">
         <a href="../index.php"><img src="/static/img/TF.png" alt="Logo" class="h-16"></a>
@@ -49,9 +48,11 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'femenino'") or di
         </nav>
          <!-- Menú de navegación (se oculta en pantallas pequeñas) -->
         <nav id="navMenu" class="hidden lg:flex lg:items-center lg:space-x-8">
-            <a href="crud.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-150px]">CUMPLEAÑOS</a>
-            <a href="dia_hombre.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-90px]">DIA DEL HOMBRE</a>
+            <a href="crud.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-80px]">CUMPLEAÑOS</a>
+            <a href="dia_hombre.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-70px]">DIA DEL HOMBRE</a>
             <a href="dia_mujer.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-60px]">DIA DE LA MUJER</a>
+            <a href="dia_padre.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-50px]">DIA DEL PADRE</a>
+            <a href="dia_madre.php" class="text-green-900 hover:text-lime-600 font-bold text-sm md:text-lg relative left-[-40px]">DIA DE LA MADRE</a>
         </nav>
         <a href="../../../logout.php" class="bg-green-600 hover:bg-lime-500 text-white font-bold py-3 px-6 rounded-lg shadow-md flex items-center">
             <img src="/static/img/cerrarsesion.png" class="w-4 h-4 mr-2"> CERRAR SESIÓN
@@ -60,80 +61,18 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'femenino'") or di
 </header>
     <div class="flex justify-center items-center mb-4 gap-x-6">
         <!-- Contenedor con ancho fijo para evitar que la tabla se agrande -->
-        <div class="w-[250px]">
+        <div class="w-[250px] relative left-[-340px]">
             <input type="text" id="buscador" placeholder="Buscar usuario..." 
                 class="w-[350px] px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ml-[0px]"
                 onkeyup="filtrarUsuarios()">
         </div>
-        <!-- Botón para agregar usuario -->
-        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full flex items-center gap-x-3 ml-[480px]"
-                onclick="agregarUsuario()">
-            <img src="/static/img/agregar.svg" alt="" class="h-5 w-5"><strong>Agregar Usuario</strong>
-        </button>
-        <a href="enviar_dia_mujer.php?enviar=true" class="bg-violet-600 hover:bg-violet-400 text-white px-4 py-2 rounded-full items-center gap-x-3 relative left-[-15px]">🌸 ¡Felicitar Dia De La Mujer! </a>
+        <a href="enviar_dia_mujer.php?enviar=true" class="bg-violet-600 hover:bg-violet-400 text-white px-4 py-2 rounded-full items-center gap-x-3 relative right-[-340px]">🌸 ¡Felicitar Dia De La Mujer! </a>
         </div>
     <script>
         function capitalizarTexto(texto) {
             return texto.toLowerCase().replace(/\b\w/g, (letra) => letra.toUpperCase());
         }
-        function agregarUsuario() {
-            Swal.fire({
-                title: "Agregar Usuario",
-                html: `
-                    <div class="w-[350px] mx-auto flex flex-col space-y-3">
-                        <input id='nombre' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Nombres' oninput="this.value = capitalizarTexto(this.value)">
-                        <input id='apellido' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Apellidos' >
-                        <input id='email' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Email'>
-                        <label>Fecha de nacimiento</label>
-                        <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date'>
-                    </div>
-                `,
-                showCancelButton: true,
-                confirmButtonText: "Guardar",
-                cancelButtonText: "Cancelar",
-                customClass: {
-                    confirmButton: "bg-green-600 hover:bg-lime-500 text-white font-bold py-2 px-4 rounded",
-                    cancelButton: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
-                    actions: "flex justify-center gap-x-3"
-                },
-                buttonsStyling: false,
-                preConfirm: () => {
-                    const nombre = document.getElementById('nombre').value;
-                    const apellido = document.getElementById('apellido').value;
-                    const email = document.getElementById('email').value;
-                    const fecha = document.getElementById('fecha').value;
-
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = 'crud.php';
-                    form.innerHTML = `
-                        <input type='hidden' name='nombre' value='${nombre}'>
-                        <input type='hidden' name='apellido' value='${apellido}'>
-                        <input type='hidden' name='email' value='${email}'>
-                        <input type='hidden' name='fecha_nacimiento' value='${fecha}'>
-                        <input type='hidden' name='agregar' value='1'>
-                    `;
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        }
     </script>
-    <?php
-    if (isset($_POST['agregar'])) {
-        $nombre = $_POST['nombre'];
-        $apellido = $_POST['apellido'];
-        $email = $_POST['email'];
-        $fecha_nacimiento = $_POST['fecha_nacimiento'];
-
-        $insertQuery = "INSERT INTO usuarios (nombre, apellido, email, fecha_nacimiento) VALUES ('$nombre', '$apellido', '$email', '$fecha_nacimiento')";
-        if ($conn->query($insertQuery) === TRUE) {
-            echo "<script>Swal.fire('Agregado', 'Usuario agregado correctamente', 'success').then(() => window.location.href='crud.php');</script>";
-        } else {
-            echo "<script>Swal.fire('Error', 'No se pudo agregar el usuario', 'error');</script>";
-        }
-    }
-    ?>
     <div class="flex justify-center overflow-y-auto max-h-[700px]  ">
         <table class="w-[1200px] bg-white shadow-lg rounded-lg border-none">
                 <thead class="sticky top-0 bg-green-700 text-white z-10">
@@ -143,7 +82,6 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'femenino'") or di
                         <th class="py-2 border-r border-gray-300 text-center w-[200px]">Genero</th>
                         <th class="py-2 border-r border-gray-300 text-center w-[200px]">Correo electronico</th>
                         <th class="py-2 border-r border-gray-300 text-center w-[150px]">Fecha de Nacimiento</th>
-                        <th class="py-2 text-center last:rounded-tr-lg w-[120px]">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-300">
@@ -154,18 +92,6 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'femenino'") or di
                             <td class="py-1 px-4 border-r border-gray-300"><?= $row['genero'] ?></td>
                             <td class="py-1 px-4 border-r border-gray-300"><?= $row['email'] ?></td>
                             <td class="py-1 px-4 border-r border-gray-300 text-center"><?= $row['fecha_nacimiento'] ?></td>
-                            <td class="py-1 px-4 flex justify-center space-x-2">
-                                <button class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-full transition-all flex items-center space-x-4"
-                                        onclick="editarUsuario(<?= $row['id'] ?>, '<?= $row['nombre'] ?>', '<?= $row['apellido'] ?>', '<?= $row['genero'] ?>', '<?= $row['email'] ?>', '<?= $row['fecha_nacimiento'] ?>')">
-                                        <img src="/static/img/editar.svg" alt="" class="w-5 h-5">
-                                        Editar
-                                </button>
-                                <button class="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded-full transition-all flex items-center space-x-4"
-                                        onclick="eliminarUsuario(<?= $row['id'] ?>)">
-                                        <img src="/static/img/cerrar.svg" alt="" class="w-4 h-3">
-                                        Eliminar
-                                </button>
-                            </td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>

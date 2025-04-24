@@ -8,10 +8,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar'])) {
     $id = intval($_POST['id']);
     $nombre = $conn->real_escape_string($_POST['nombre']);
     $apellido = $conn->real_escape_string($_POST['apellido']);
+    $genero = $conn->real_escape_string($_POST['genero']);
     $email = $conn->real_escape_string($_POST['email']);
     $fecha_nacimiento = $conn->real_escape_string($_POST['fecha_nacimiento']);
+    $tiene_hijos = $conn->real_escape_string($_POST['tiene_hijos']);
 
-    if ($conn->query("UPDATE usuarios SET nombre='$nombre', apellido='$apellido', email='$email', fecha_nacimiento='$fecha_nacimiento' WHERE id=$id")) {
+    if ($conn->query("UPDATE usuarios SET nombre='$nombre', apellido='$apellido', genero='$genero', email='$email', fecha_nacimiento='$fecha_nacimiento', 
+        tiene_hijos='$tiene_hijos' WHERE id=$id")) {
         echo "<script>Swal.fire('Actualizado', 'Usuario actualizado correctamente', 'success').then(() => { location.reload(); });</script>";
     } else {
         echo "<script>Swal.fire('Error', 'No se pudo actualizar', 'error');</script>";
@@ -27,7 +30,7 @@ if (isset($_GET['delete'])) {
     }
 }
 
-$result = $conn->query("SELECT * FROM usuarios WHERE genero = 'masculino'") or die("Error en la consulta: " . $conn->error);
+$result = $conn->query("SELECT * FROM usuarios WHERE genero = 'masculino' AND tiene_hijos = 'si'") or die("Error en la consulta: " . $conn->error);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -36,7 +39,7 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'masculino'") or d
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <title>DIA DEL HOMBRE</title>
+    <title>DIA DEL PADRE</title>
 </head>
 <body class="bg-[#E1EEE2] font-sans">
 <header class="w-full bg-white mb-10 border-b-4 border-green-900">
@@ -66,40 +69,40 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'masculino'") or d
                 class="w-[350px] px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ml-[0px]"
                 onkeyup="filtrarUsuarios()">
         </div>
-        <!-- Botón para agregar usuario -->
-        <a href="enviar_dia_hombre.php?enviar=true" class="bg-blue-700 hover:bg-blue-500 text-white px-4 py-2 rounded-full items-center gap-x-3 relative right-[-330px]">🎩 ¡Felicitar Dia Del Hombre! </a>
+        <a href="enviar_dia_padre.php?enviar=true" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-full flex items-center gap-x-2 relative right-[-345px]">👨‍👧‍👦 ¡Felicitar Día del Padre!</a>
         </div>
     <script>
     function capitalizarTexto(texto) {
         return texto.toLowerCase().replace(/\b\w/g, (letra) => letra.toUpperCase());
     }
     </script>
-
-    <div class="flex justify-center overflow-y-auto max-h-[700px]  ">
-        <table class="w-[1200px] bg-white shadow-lg rounded-lg border-none">
-                <thead class="sticky top-0 bg-green-700 text-white z-10">
-                    <tr class="bg-green-700 text-white ">
-                        <th class="py-2 border-r border-gray-300 text-center w-[200px]">Nombres</th>
-                        <th class="py-2 border-r border-gray-300 text-center w-[200px]">Apellidos</th>
-                        <th class="py-2 border-r border-gray-300 text-center w-[200px]">Genero</th>
-                        <th class="py-2 border-r border-gray-300 text-center w-[200px]">Correo electronico</th>
-                        <th class="py-2 border-r border-gray-300 text-center w-[150px]">Fecha de Nacimiento</th>
+   <div class="flex justify-center overflow-y-auto max-h-[700px]">
+        <table class="w-[1200px] bg-white shadow-lg rounded-lg border-none" role="table">
+            <thead class="sticky top-0 bg-green-700 text-white z-10">
+                <tr>
+                    <th scope="col" class="py-2 border-r border-gray-300 text-center w-[200px]">Nombres</th>
+                    <th scope="col" class="py-2 border-r border-gray-300 text-center w-[200px]">Apellidos</th>
+                    <th scope="col" class="py-2 border-r border-gray-300 text-center w-[200px]">Género</th>
+                    <th scope="col" class="py-2 border-r border-gray-300 text-center w-[200px]">Correo electrónico</th>
+                    <th scope="col" class="py-2 border-r border-gray-300 text-center w-[150px]">Fecha de nacimiento</th>
+                    <th scope="col" class="py-2 border-r border-gray-300 text-center w-[150px]">Tiene hijos</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-300">
+                <?php while ($row = $result->fetch_assoc()): ?>
+                    <tr class="hover:bg-gray-100 transition-all border-l-4 border-transparent hover:border-green-500">
+                        <td class="py-1 px-4 border-r border-gray-300"><?= htmlspecialchars($row['nombre']) ?></td>
+                        <td class="py-1 px-4 border-r border-gray-300"><?= htmlspecialchars($row['apellido']) ?></td>
+                        <td class="py-1 px-4 border-r border-gray-300"><?= htmlspecialchars($row['genero']) ?></td>
+                        <td class="py-1 px-4 border-r border-gray-300"><?= htmlspecialchars($row['email']) ?></td>
+                        <td class="py-1 px-4 border-r border-gray-300 text-center"><?= htmlspecialchars($row['fecha_nacimiento']) ?></td>
+                        <td class="py-1 px-4 border-r border-gray-300"><?= htmlspecialchars($row['tiene_hijos']) ?></td>
                     </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-300">
-                    <?php while ($row = $result->fetch_assoc()): ?>
-                        <tr class="hover:bg-gray-100 transition-all border-l-4 border-transparent hover:border-green-500 first:rounded-t-lg last:rounded-b-lg">
-                            <td class="py-1 px-4 border-r border-gray-300"><?= $row['nombre'] ?></td>
-                            <td class="py-1 px-4 border-r border-gray-300"><?= $row['apellido'] ?></td>
-                            <td class="py-1 px-4 border-r border-gray-300"><?= $row['genero'] ?></td>
-                            <td class="py-1 px-4 border-r border-gray-300"><?= $row['email'] ?></td>
-                            <td class="py-1 px-4 border-r border-gray-300 text-center"><?= $row['fecha_nacimiento'] ?></td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        </div>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
     </div>
+
     <script>
         function filtrarUsuarios() {
             let input = document.getElementById("buscador").value.toLowerCase();
@@ -131,23 +134,33 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'masculino'") or d
             });
         }
 
-        function editarUsuario(id, nombre, apellido, email, fecha) {
+        function editarUsuario(id, nombre, apellido, genero, email, fecha_nacimiento, tiene_hijos) {
             Swal.fire({
                 title: "Editar Usuario",
                 html: `
                     <div class="w-[350px] mx-auto flex flex-col space-y-3">
                         <input id='nombre' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Nombre' value='${nombre}'>
                         <input id='apellido' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Apellido' value='${apellido}'>
+                        <select id='genero' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm'>
+                            <option value="" disabled ${!genero ? "selected" : ""}>¿Género?</option>
+                            <option value="masculino" ${genero === "masculino" ? "selected" : ""}>Masculino</option>
+                            <option value="femenino" ${genero === "femenino" ? "selected" : ""}>Femenino</option>
+                        </select>
                         <input id='email' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' placeholder='Email' value='${email}'>
                         <label>Fecha de nacimiento</label>
-                        <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date' value='${fecha}'>
+                        <input id='fecha' class='w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm' type='date' value='${fecha_nacimiento}'>
+                        <select id="tiene_hijos" class="w-full text-center px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                            <option value="" disabled ${!tiene_hijos ? "selected" : ""}>¿Tiene hijos?</option>
+                            <option value="si" ${tiene_hijos === "si" ? "selected" : ""}>Sí</option>
+                            <option value="no" ${tiene_hijos === "no" ? "selected" : ""}>No</option>
+                        </select>                    
                     </div>
                 `,
                 showCancelButton: true,
                 confirmButtonText: "Guardar",
                 cancelButtonText: "Cancelar",
-                customClass:{
-                    confirmButton:"bg-green-600 hover:bg-lime-500 text-white font-bold py-2 px-4 rounded",
+                customClass: {
+                    confirmButton: "bg-green-600 hover:bg-lime-500 text-white font-bold py-2 px-4 rounded",
                     cancelButton: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
                     actions: "flex justify-center gap-x-3"
                 },
@@ -160,8 +173,10 @@ $result = $conn->query("SELECT * FROM usuarios WHERE genero = 'masculino'") or d
                         <input type='hidden' name='id' value='${id}'>
                         <input type='hidden' name='nombre' value='${document.getElementById('nombre').value}'>
                         <input type='hidden' name='apellido' value='${document.getElementById('apellido').value}'>
+                        <input type='hidden' name='genero' value='${document.getElementById('genero').value}'>
                         <input type='hidden' name='email' value='${document.getElementById('email').value}'>
                         <input type='hidden' name='fecha_nacimiento' value='${document.getElementById('fecha').value}'>
+                        <input type='hidden' name='tiene_hijos' value='${document.getElementById('tiene_hijos').value}'>
                         <input type='hidden' name='editar' value='1'>
                     `;
                     document.body.appendChild(form);
